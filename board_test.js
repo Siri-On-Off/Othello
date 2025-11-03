@@ -113,7 +113,7 @@ Deno.test("test tied = false  -> player two wins", () => {
      expect(playerTwoCount).toBe(44);
 });
 
-Deno.test("test tied = false, game not finished", () => {
+Deno.test("test tied = false -> game not finished", () => {
      // Arrange
      const board = almostFullBoard();
 
@@ -133,7 +133,7 @@ Deno.test("test tied = false, game not finished", () => {
      expect(playerTwoCount).toBe(0);
 });
 
-Deno.test("test valid move player 1", () => {
+Deno.test("test isValidMove = true -> valid move player 1", () => {
      // Arrange
      const board = new Board();
      const player = 1;
@@ -147,7 +147,7 @@ Deno.test("test valid move player 1", () => {
      expect(isValid).toBe(true);
 });
 
-Deno.test("test valid move player 2", () => {
+Deno.test("test isValidMove = true, valid move player 2", () => {
      // Arrange
      const board = new Board();
      const player = 2;
@@ -161,7 +161,7 @@ Deno.test("test valid move player 2", () => {
      expect(isValid).toBe(true);
 });
 
-Deno.test("test invalid shift", () => {
+Deno.test("test isValidMove = false -> invalid shift", () => {
      // Arrange
      const board = new Board();
      const player = 1;
@@ -176,7 +176,7 @@ Deno.test("test invalid shift", () => {
 });
 
 
-Deno.test("test invalid move out of bounds", () => {
+Deno.test("test isValidMove = RangeError -> invalid move out of bounds", () => {
      // Arrange
      const board = new Board();
      const player = 1;
@@ -188,7 +188,7 @@ Deno.test("test invalid move out of bounds", () => {
 });
 
 
-Deno.test("test invalid move on occupied field", () => {
+Deno.test("test isValidMove = false -> invalid move on occupied field", () => {
      // Arrange
      const board = new Board();
      const player = 1;
@@ -202,7 +202,7 @@ Deno.test("test invalid move on occupied field", () => {
      expect(isValid).toBe(false);
 });
 
-Deno.test("test invalid player", () => {
+Deno.test("test isValidMove = RangeError -> invalid player", () => {
      // Arrange
      const board = new Board();
      const player = 3;
@@ -213,7 +213,7 @@ Deno.test("test invalid player", () => {
      expect(() => board.isValidMove(player, row, col)).toThrow(RangeError);
 });
 
-Deno.test("test invalid move with no opponent between", () => {
+Deno.test("test isValidMove = false ->  move with no opponent between", () => {
      // Arrange
      const board = new Board();
      const player = 1;
