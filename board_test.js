@@ -1,6 +1,43 @@
 import { expect } from "jsr:@std/expect";
 import { Board } from "./board.js";
 
+const one = 1;
+const two = 2;
+const empty = 0;
+const dimension = 8;
+
+function fullBoardWithPlayerTwoFillRestWithPlayerOne(playerOneCount) {
+     // fill board with player two
+     const fields = Array.from({ length: dimension }, () =>
+          Array(dimension).fill(two)
+     );
+
+     // fill some fields with player one
+     let counter = 0;
+     for (let r = 0; r < dimension && counter < playerOneCount; r++) {
+          for (let c = 0; c < dimension && counter < playerOneCount; c++) {
+               fields[r][c] = one;
+               counter++;
+          }
+     }
+     return Board.of(fields);
+}
+
+function emptyBoard() {
+     const fields = Array.from({ length: dimension }, () =>
+          Array(dimension).fill(empty)
+     );
+     return Board.of(fields);
+}
+
+function almostFullBoard() {
+     const fields = Array.from({ length: dimension }, () =>
+          Array(dimension).fill(one)
+     );
+     fields[0][0] = empty;
+     return Board.of(fields);
+}
+
 Deno.test("test initial count", () => {
      // Arrange
      const board = new Board();
@@ -14,6 +51,86 @@ Deno.test("test initial count", () => {
      expect(playerOneFields.length).toBe(2);
      expect(playerTwoFields.length).toBe(2);
      expect(emptyFields.length).toBe(8 * 8 - 2 * 2);
+});
+
+Deno.test("test tied = true", () => {
+     // Arrange
+     const board = fullBoardWithPlayerTwoFillRestWithPlayerOne(32);
+
+     // Act
+     const result = board.result();
+     const winner = result.winner;
+     const tied = result.tied;
+     const finished = result.finished;
+     const playerOneCount = result.playerOne;
+     const playerTwoCount = result.playerTwo;
+
+     // Assert
+     expect(finished).toBe(true);
+     expect(tied).toBe(true);
+     expect(winner).toBe(0);
+     expect(playerOneCount).toBe(32);
+     expect(playerTwoCount).toBe(32);
+});
+
+Deno.test("test tied = false  -> player one wins", () => {
+     // Arrange
+     const board = fullBoardWithPlayerTwoFillRestWithPlayerOne(40);
+
+     // Act
+     const result = board.result();
+     const winner = result.winner;
+     const tied = result.tied;
+     const finished = result.finished;
+     const playerOneCount = result.playerOne;
+     const playerTwoCount = result.playerTwo;
+
+     // Assert
+     expect(finished).toBe(true);
+     expect(tied).toBe(false);
+     expect(winner).toBe(1);
+     expect(playerOneCount).toBe(40);
+     expect(playerTwoCount).toBe(24);
+});
+
+Deno.test("test tied = false  -> player two wins", () => {
+     // Arrange
+     const board = fullBoardWithPlayerTwoFillRestWithPlayerOne(20);
+
+     // Act
+     const result = board.result();
+     const winner = result.winner;
+     const tied = result.tied;
+     const finished = result.finished;
+     const playerOneCount = result.playerOne;
+     const playerTwoCount = result.playerTwo;
+
+     // Assert
+     expect(finished).toBe(true);
+     expect(tied).toBe(false);
+     expect(winner).toBe(2);
+     expect(playerOneCount).toBe(20);
+     expect(playerTwoCount).toBe(44);
+});
+
+Deno.test("test tied = false, game not finished", () => {
+     // Arrange
+     const board = almostFullBoard();
+
+     // Act
+     const result = board.result();
+     const winner = result.winner;
+     const tied = result.tied;
+     const finished = result.finished;
+     const playerOneCount = result.playerOne;
+     const playerTwoCount = result.playerTwo;
+
+     // Assert
+     expect(finished).toBe(false);
+     expect(tied).toBe(false);
+     expect(winner).toBe(0);
+     expect(playerOneCount).toBe(63);
+     expect(playerTwoCount).toBe(0);
 });
 
 Deno.test("test valid move player 1", () => {
