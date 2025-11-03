@@ -11,7 +11,7 @@ const initRowColPlayer = [
   [4, 3, one],
 ];
 
-const shifts = [
+const shifts = [ // [row shift, col shift]
   [-1, +0], // north
   [-1, +1], // north east
   [+0, +1], // east
@@ -94,6 +94,53 @@ export class Board {
       return new Set(unique.values());
     };
     return dedup(validMoves);
+  }
+
+  isValidMove(player, row, col) {
+    if (player !== one && player !== two) {
+      throw new RangeError(`illegal player ${player}`);
+    }
+    if (typeof row != "number" || typeof col != "number") {
+      throw new TypeError("row and col must be numbers");
+    }
+    if (row < 0 || row >= dimension || col < 0 || col >= dimension) {
+      throw new RangeError(`move [${row}/${col}] is out of bounds`);
+    }
+    if (this.fields[row][col] != empty) {
+      return false;
+    }
+
+    const otherPlayer = this.opponent(player);
+
+    for (const [rowShift, colShift] of shifts) {
+      let hasOpponentBetween = false;
+      let movedRow = row + rowShift;
+      let movedCol = col + colShift;
+
+      let onBoard = false;
+
+      while (
+        movedRow >= 0 &&
+        movedRow < dimension &&
+        movedCol >= 0 &&
+        movedCol < dimension
+      ) {
+        if (this.fields[movedRow][movedCol] === otherPlayer) {
+          hasOpponentBetween = true;
+          movedRow += rowShift;
+          movedCol += colShift;
+        } else {
+          onBoard = true;
+          break;
+        }
+      }
+
+      if (onBoard && hasOpponentBetween && this.fields[movedRow][movedCol] === player) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   play(row, col, player) {
